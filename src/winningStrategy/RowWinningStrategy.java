@@ -1,7 +1,8 @@
 package winningStrategy;
 
-import TicTacToe.models.Board;
-import TicTacToe.models.Player;
+
+import models.Board;
+import models.Player;
 
 public class RowWinningStrategy implements WinningStrategy {
     @Override

@@ -7,6 +7,11 @@ public class Board {
 
     List<List<Cell>> board;
 
+    public Board(int d){
+        this.size=d;
+
+    }
+
     public int getSize() {
         return size;
     }

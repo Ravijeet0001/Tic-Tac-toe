@@ -25,7 +25,7 @@ public class Player {
         this.name = name;
     }
 
-    public PlayerType getType() {
+    public PlayerType getPlayerType() {
         return type;
     }
 
@@ -40,4 +40,5 @@ public class Player {
     public void setSymbol(Symbol symbol) {
         this.symbol = symbol;
     }
+
 }
