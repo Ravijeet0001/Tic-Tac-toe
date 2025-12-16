@@ -6,7 +6,7 @@ import exception.InvalidBotCount;
 import models.Game;
 import models.GameState;
 import models.Player;
-import winningStrategy.WinningStrategy;
+import strategy.winningStrategy.WinningStrategy;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class GameController {
     }
 
     public void makeMove(Game game){
-        //todo;
+        game.makeMove();
     }
 
     public GameState checkState(Game g){
@@ -45,7 +45,7 @@ public class GameController {
     }
 
     public void undo(Game g){
-        //todo;
+        g.undo();
     }
 
 

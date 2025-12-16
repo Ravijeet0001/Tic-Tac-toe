@@ -3,7 +3,7 @@ package models;
 
 
 import exception.InvalidBotCount;
-import winningStrategy.WinningStrategy;
+import strategy.winningStrategy.WinningStrategy;
 
 
 import java.util.ArrayList;
@@ -59,12 +59,85 @@ public class Game {
         this.gameState = gameState;
     }
 
+    public boolean validate(Move m){
+        int row=m.getCell().getRow();
+        int col=m.getCell().getCol();
+
+        if(row> board.getSize()){
+            return false;
+        }
+        if(col> board.getSize()){
+            return false;
+        }
+
+        return board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY);
+    }
+
+    public void makeMove(){
+        Player currentPlayer=players.get(nextPlayerTurn);
+        System.out.println("Current turn is :" + currentPlayer.getName());
+        Move m=currentPlayer.makeMove(board);
+
+        if(!validate(m)){
+            System.out.println("Invalid move");
+            return;
+        }
+
+        int row=m.getCell().getRow();
+        int col=m.getCell().getCol();
+        Cell cellToUpdate=board.getBoard().get(row).get(col);
+        cellToUpdate.setCellState(CellState.FILLED);
+        cellToUpdate.setPlayer(currentPlayer);
+
+        Move finalMove= new Move(cellToUpdate,currentPlayer);
+        moves.add(finalMove);
+
+        nextPlayerTurn +=1;
+        nextPlayerTurn %= players.size();
+
+        if(checkWinner(board,finalMove)){
+            gameState=GameState.SUCCESS;
+            winner=currentPlayer;;
+        }else if(moves.size()==board.getSize()*board.getSize()){
+            gameState=GameState.DRAW;
+        }
+
+        System.out.println("Player"+ currentPlayer.getName()+ " moved at "+ row +" , "+ col);
+    }
+
+    public boolean checkWinner(Board b, Move m){
+        for(WinningStrategy w: winningStrategies){
+            if(w.checkWinner(m,b)){
+                return true;
+            }
+
+        }
+        return false;
+    }
+
     public Player getWinner() {
         return winner;
     }
 
     public void setWinner(Player winner) {
         this.winner = winner;
+    }
+
+    public void undo(){
+        if(moves.isEmpty()){
+            System.out.println("No Moved left");
+            return;
+        }
+        Move m = moves.get(moves.size()-1);
+        moves.remove(m);
+        Cell c=board.getBoard().get(m.getCell().getRow()).get(m.getCell().getCol());
+        c.setPlayer(null);
+        c.setCellState(CellState.EMPTY);
+        nextPlayerTurn-=1;
+        nextPlayerTurn = (nextPlayerTurn + players.size()) % players.size();
+        for(WinningStrategy ws: winningStrategies){
+            ws.handleUndo(m,board);
+        }
     }
 
     public static Builder getInstanceBuilder(){
